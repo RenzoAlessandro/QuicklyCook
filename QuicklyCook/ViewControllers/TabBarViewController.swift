@@ -53,7 +53,38 @@ class TabBarViewController: UIViewController, UITextFieldDelegate ,UITableViewDa
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        let jsonUrlString = "https://api.edamam.com/search?q=chicken&app_id=e533a2a7&app_key=49c51fa4ab6791c69b44ef037b33ddce"
+
+        guard let url = URL(string: jsonUrlString) else{return}
         
+        URLSession.shared.dataTask(with: url) { (data, response, err) in
+            print("do spuff here")
+            
+            guard let data = data else {return}
+            //let dataAsString = String(data: data,encoding: .utf8)
+            //print(dataAsString)
+            
+            do{
+                let websiteDescription = try JSONDecoder().decode(WebsiteDescription.self, from: data)
+                //let recetas = try JSONDecoder().decode([Course].self, from: data)
+                
+                //print( websiteDescription.hits[0].recipe.count)
+                //print("recipe", websiteDescription.hits[0].recipe[0])
+                //print(websiteDescription.hits[0].recipe[0].ingredients[0].food.label)
+                //let result = websiteDescription
+                for hit in websiteDescription.hits {
+                    //print(hit.recipe)
+                    //print(employee.name, employee.id)
+                }
+                self.recipes = websiteDescription.hits
+                DispatchQueue.main.async {
+                    self.TableView.reloadData()
+                }
+            }catch let jsonErr {
+                print("error serializing json", jsonErr)
+                
+            }
+        }.resume()
       }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

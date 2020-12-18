@@ -17,7 +17,11 @@ class RealTimeCameraObjectDetectionViewController: UIViewController , AVCaptureV
 override func viewDidLoad() {
     super.viewDidLoad()
     
+    //Configurar la cámara que se utilizará para la captura
+    
     let captureSession = AVCaptureSession()
+    
+    //Configure su dispositivo y la resolución
     
     captureSession.sessionPreset = .photo
 
@@ -28,6 +32,8 @@ override func viewDidLoad() {
     captureSession.addInput(input)
     
     captureSession.startRunning()
+    
+    //Configuracion de la capa de vista previa
     
     let previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
     
@@ -48,6 +54,8 @@ func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBu
     
     guard let pixelBuffer: CVPixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else{return}
     
+    //Cargamos el modelo VNCoreMLModel
+    
     guard let model = try? VNCoreMLModel(for: SqueezeNet().model)else{return}
     
     let request = VNCoreMLRequest(model: model) { (finishedReq, err) in
@@ -55,6 +63,8 @@ func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBu
         guard let firstOservation = results.first else{return}
         
         print(firstOservation.identifier,firstOservation.confidence)
+        
+        //Imprimir en pantalla la identificacion.
         
         DispatchQueue.main.async {
             self.TextoDeteccion.text = "\(firstOservation.identifier)"
